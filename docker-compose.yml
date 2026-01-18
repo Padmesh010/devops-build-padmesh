@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  web:
+    image: padmeshka/devops-build-dev:latest
+    container_name: devops-build-web
+    ports:
+      - "80:80"
+    restart: always
