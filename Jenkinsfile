@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "padmeshka/devops-build-dev:latest"
+        DEV_IMAGE  = "padmeshka/devops-build-dev:latest"
+        PROD_IMAGE = "padmeshka/devops-build-prod:latest"
     }
 
     stages {
@@ -13,9 +14,21 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build DEV Image') {
+            when {
+                branch 'dev'
+            }
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                sh "docker build -t ${DEV_IMAGE} ."
+            }
+        }
+
+        stage('Build PROD Image') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh "docker build -t ${PROD_IMAGE} ."
             }
         }
 
@@ -31,9 +44,21 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push DEV Image') {
+            when {
+                branch 'dev'
+            }
             steps {
-                sh 'docker push $IMAGE_NAME'
+                sh "docker push ${DEV_IMAGE}"
+            }
+        }
+
+        stage('Push PROD Image') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh "docker push ${PROD_IMAGE}"
             }
         }
     }
