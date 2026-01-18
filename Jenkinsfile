@@ -11,24 +11,25 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+                sh 'echo "Building branch: $GIT_BRANCH"'
             }
         }
 
         stage('Build DEV Image') {
             when {
-                branch 'dev'
+                expression { env.GIT_BRANCH == 'origin/dev' }
             }
             steps {
-                sh "docker build -t ${DEV_IMAGE} ."
+                sh 'docker build -t $DEV_IMAGE .'
             }
         }
 
         stage('Build PROD Image') {
             when {
-                branch 'master'
+                expression { env.GIT_BRANCH == 'origin/master' }
             }
             steps {
-                sh "docker build -t ${PROD_IMAGE} ."
+                sh 'docker build -t $PROD_IMAGE .'
             }
         }
 
@@ -46,19 +47,19 @@ pipeline {
 
         stage('Push DEV Image') {
             when {
-                branch 'dev'
+                expression { env.GIT_BRANCH == 'origin/dev' }
             }
             steps {
-                sh "docker push ${DEV_IMAGE}"
+                sh 'docker push $DEV_IMAGE'
             }
         }
 
         stage('Push PROD Image') {
             when {
-                branch 'master'
+                expression { env.GIT_BRANCH == 'origin/master' }
             }
             steps {
-                sh "docker push ${PROD_IMAGE}"
+                sh 'docker push $PROD_IMAGE'
             }
         }
     }
