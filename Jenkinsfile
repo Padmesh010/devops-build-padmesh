@@ -14,16 +14,21 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build DEV Image') {
+            when {
+                branch 'dev'
+            }
             steps {
-                script {
-                    if (env.BRANCH_NAME == 'dev') {
-                        sh 'docker build -t $DEV_IMAGE .'
-                    }
-                    if (env.BRANCH_NAME == 'master') {
-                        sh 'docker build -t $PROD_IMAGE .'
-                    }
-                }
+                sh "docker build -t ${DEV_IMAGE} ."
+            }
+        }
+
+        stage('Build PROD Image') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh "docker build -t ${PROD_IMAGE} ."
             }
         }
 
@@ -39,16 +44,21 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push DEV Image') {
+            when {
+                branch 'dev'
+            }
             steps {
-                script {
-                    if (env.BRANCH_NAME == 'dev') {
-                        sh 'docker push $DEV_IMAGE'
-                    }
-                    if (env.BRANCH_NAME == 'master') {
-                        sh 'docker push $PROD_IMAGE'
-                    }
-                }
+                sh "docker push ${DEV_IMAGE}"
+            }
+        }
+
+        stage('Push PROD Image') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh "docker push ${PROD_IMAGE}"
             }
         }
     }
